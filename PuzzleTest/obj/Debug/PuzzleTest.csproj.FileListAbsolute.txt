@@ -1,0 +1,10 @@
+C:\Users\Alfonso\Documents\Arduino\Minduino Editor\PuzzleTest\obj\Debug\PuzzleTest.csprojResolveAssemblyReference.cache
+C:\Users\Alfonso\Documents\Arduino\Minduino Editor\PuzzleTest\obj\Debug\PuzzleTest.Properties.Resources.resources
+C:\Users\Alfonso\Documents\Arduino\Minduino Editor\PuzzleTest\obj\Debug\PuzzleTest.csproj.GenerateResource.Cache
+C:\Users\Alfonso\Documents\Arduino\Minduino Editor\PuzzleTest\bin\Debug\PuzzleTest.exe.config
+C:\Users\Alfonso\Documents\Arduino\Minduino Editor\PuzzleTest\bin\Debug\PuzzleTest.exe
+C:\Users\Alfonso\Documents\Arduino\Minduino Editor\PuzzleTest\bin\Debug\PuzzleTest.pdb
+C:\Users\Alfonso\Documents\Arduino\Minduino Editor\PuzzleTest\bin\Debug\PuzzleEditor.dll
+C:\Users\Alfonso\Documents\Arduino\Minduino Editor\PuzzleTest\bin\Debug\PuzzleEditor.pdb
+C:\Users\Alfonso\Documents\Arduino\Minduino Editor\PuzzleTest\obj\Debug\PuzzleTest.exe
+C:\Users\Alfonso\Documents\Arduino\Minduino Editor\PuzzleTest\obj\Debug\PuzzleTest.pdb
