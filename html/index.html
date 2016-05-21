@@ -1,1 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: Fixed Blockly</title>
+  <script src="blocky/blockly_compressed.js"></script>
+  <script src="blocky/blocks_compressed.js"></script>
+  <script src="blocky/msg/js/en.js"></script>
+  <script src="blocks.js"></script>
+  <script src="inc/jquery-2.2.0.min.js"></script>
+  <style>
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+  </style>
+<script>
+$(document).ready(function()
+{
+	getPorts();
+});
 
+function toXML()
+{
+	var xmlDom = Blockly.Xml.workspaceToDom(workspace);
+    var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
+
+	return xmlText;
+}
+
+function fromXML(xml)
+{
+	var xmlDom = Blockly.Xml.textToDom(xml);
+	Blockly.Xml.domToWorkspace(workspace, xmlDom);
+}
+
+function upload()
+{
+	$.ajax({
+		url: "/cgi",
+		type: "POST", 
+		data: { op: 'PROG', prog: toXML() }
+	}).done(function() {
+		alert("Enviado");
+	});
+}
+
+function save()
+{
+	$.ajax({
+		url: "/cgi",
+		type: "POST", 
+		data: { op: 'SAVE', prog: toXML(), filename: 'temp' }
+	}).done(function() {
+		alert("Guardado");
+	});
+}
+
+function load()
+{
+	$.ajax({
+		url: "/cgi",
+		type: "POST", 
+		data: { op: 'LOAD', filename: 'temp' }, 
+		success: function (resp)
+		{
+			if(resp == "error")
+				alert("No se pudo cargar");
+			else
+				fromXML(resp);
+		}
+	});
+}
+
+function getPorts()
+{
+	$.ajax({
+		url: "/cgi",
+		dataType: "text", 
+		type: "POST", 
+		data: { op: 'GET_PORTS' }, 
+		success: function(resp)
+		{
+			opts = eval(resp);
+			
+		$('#comPorts')
+			.find('option')
+			.remove()
+			.end()
+			.append('<option value="">Choose a serial port</option>')
+			.val('whatever');			
+	
+			$.each(opts, function (i, item) {
+				$('#comPorts').append($('<option>', { 
+					value: item.port,
+					text : item.name 
+				}));
+			});
+		}
+	});
+}
+
+function setPort()
+{
+	if($('#comPorts').val() != "")
+	{
+		$.ajax({
+			url: "/cgi", 
+			type: "POST", 
+			data: { op: 'SET_PORT', port: $('#comPorts').val() }, 
+			success: function (resp)
+			{
+				r = eval(resp);
+				if(r == "ok")
+					alert("Port set");
+				else
+					alert("Port not set. Is it available?");
+			}
+		});
+	}
+}
+
+function ping()
+{
+	$.ajax({
+		url: "/cgi", 
+		type: "POST", 
+		data: { op: 'PING' }, 
+		success: function (resp)
+		{
+			alert(resp);
+		}
+	});
+}
+</script>
+</head>
+<body>
+  <h1><a href="https://developers.google.com/blockly/">Blockly</a> &gt;
+    <a href="blocky/demos/index.html">Demos</a> &gt; Fixed Blockly</h1>
+
+  <p>This is a simple demo of injecting Blockly into a fixed-sized 'div' element.</p>
+  
+  <button type="button" title="ports" onclick="getPorts()">List Ports</button>
+  <button type="button" title="up" onclick="upload()">Upload program</button>
+  <button type="button" title="load" onclick="load()">Load program</button>
+  <button type="button" title="save" onclick="save()">Save program</button>
+  <br/>
+  <button type="button" title="ping" onclick="ping()">Ping Minduino</button>
+
+  <select id="comPorts" onchange="setPort()">
+  </select>
+  
+  <p>&rarr; More info on <a href="https://developers.google.com/blockly/installation/injecting-fixed-size">injecting fixed-sized Blockly</a>...</p>
+
+  <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+
+  <xml id="toolbox" style="display: none">
+	<category name="Logic" colour="210">
+		<block type="controls_if"></block>
+		<block type="logic_compare">
+			<field name="OP">EQ</field>
+		</block>
+		<block type="logic_operation">
+			<field name="OP">AND</field>
+		</block>
+		<block type="logic_negate"></block>
+		<block type="logic_boolean">
+			<field name="BOOL">TRUE</field>
+		</block>
+	</category>
+	<category name="Loops" colour="120">
+		<block type="controls_repeat_ext">
+			<value name="TIMES">
+				<shadow type="math_number">
+					<field name="NUM">10</field>
+				</shadow>
+			</value>
+		</block>
+		<block type="controls_whileUntil">
+			<field name="MODE">WHILE</field>
+		</block>
+		<block type="controls_for">
+			<field name="VAR">n</field>
+			<value name="FROM">
+			<shadow type="math_number">
+				<field name="NUM">1</field>
+			</shadow>
+			</value>
+			<value name="TO">
+				<shadow type="math_number">
+					<field name="NUM">10</field>
+				</shadow>
+			</value>
+			<value name="BY">
+				<shadow type="math_number">
+					<field name="NUM">1</field>
+				</shadow>
+			</value>
+		</block>
+	</category>
+	<category name="Math" colour="230">
+		<block type="math_number">
+			<field name="NUM">0</field>
+		</block>
+		<block type="math_arithmetic">
+			<field name="OP">ADD</field>
+			<value name="A">
+				<shadow type="math_number">
+					<field name="NUM">1</field>
+				</shadow>
+			</value>
+			<value name="B">
+				<shadow type="math_number">
+					<field name="NUM">1</field>
+				</shadow>
+			</value>
+		</block>
+		<block type="math_single" disabled="true">
+			<field name="OP">ABS</field>
+			<value name="NUM">
+				<shadow type="math_number">
+					<field name="NUM">1</field>
+				</shadow>
+			</value>
+		</block>
+		<block type="math_trig" disabled="true">
+			<field name="OP">SIN</field>
+			<value name="NUM">
+				<shadow type="math_number">
+					<field name="NUM">0</field>
+				</shadow>
+			</value>
+		</block>
+		<block type="math_constant" disabled="true">
+			<field name="CONSTANT">PI</field>
+		</block>
+		<block type="math_number_property" disabled="true">
+			<mutation divisor_input="false"></mutation>
+			<field name="PROPERTY">EVEN</field>
+			<value name="NUMBER_TO_CHECK">
+				<shadow type="math_number">
+					<field name="NUM">0</field>
+				</shadow>
+			</value>
+		</block>
+		<block type="math_change">
+			<field name="VAR">n</field>
+			<value name="DELTA">
+				<shadow type="math_number">
+					<field name="NUM">1</field>
+				</shadow>
+			</value>
+		</block>
+		<block type="math_round" disabled="true">
+			<field name="OP">ROUND</field>
+			<value name="NUM">
+				<shadow type="math_number">
+					<field name="NUM">0</field>
+				</shadow>
+			</value>
+		</block>
+		<block type="math_random_int">
+			<value name="FROM">
+				<shadow type="math_number">
+					<field name="NUM">1</field>
+				</shadow>
+			</value>
+			<value name="TO">
+				<shadow type="math_number">
+					<field name="NUM">10</field>
+				</shadow>
+			</value>
+		</block>
+	</category>
+	<sep></sep>
+    <category name="Operations" colour="240">
+		<block type="operation_wait"></block>
+		<block type="send_message"></block>
+		<block type="program_begin_event"></block>
+	</category>
+	<sep></sep>
+	<category name="Sensors" colour="165">
+		<category name="Touch">
+			<block type="sensor_touch_event"></block>
+			<block type="sensor_touch"></block>
+		</category>
+		<category name="Temperature">
+			<block type="sensor_temperature_event"></block>
+			<block type="sensor_temperature_event_range"></block>
+			<block type="sensor_temperature"></block>
+			<block type="text"></block>
+			<block type="text"></block>
+		</category>
+		<category name="Gyroscope/Accelerometer">
+			<block type="sensor_gyro_event"></block>
+			<block type="sensor_gyro_value"></block>
+		</category>
+	</category>
+    <category name="Motors" colour="65">
+		<block type="motor_reverse"></block>
+		<block type="motor_set_speed"></block>
+	</category>
+	<sep></sep>
+	<category name="Variables" colour="330" custom="VARIABLE"></category>  
+  </xml>
+
+  <script>
+    var workspace = Blockly.inject('blocklyDiv',
+        {media: '../../media/',
+         toolbox: document.getElementById('toolbox')});
+  </script>
+
+</body>
+</html>
